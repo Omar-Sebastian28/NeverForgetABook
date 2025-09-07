@@ -1,6 +1,52 @@
-@API_Biblioteca_HostAddress = http://localhost:7269
+@API_Biblioteca_HostAddress = https://localhost:7269
 
-GET {{API_Biblioteca_HostAddress}}Api/v1/Libro/ Http/1.1  
+
+
+GET {{API_Biblioteca_HostAddress}}/Api/v1/Libro/ Http/1.1  
+Accept: application/json
+
+###
+
+
+POST {{API_Biblioteca_HostAddress}}/Api/v1/Libro/ Http/1.1  
+Accept: application/json
+Content-type: application/json
+{
+    "titulo": "http Testing",
+    "autor": "Omar",
+    "añoPublicacion": 1990,
+    "genero": "Ciencia Ficción",
+    "descripcion": "string",
+    "usuarioId": "string"
+}
+
+###
+
+
+GET {{API_Biblioteca_HostAddress}}/Api/v1/Libro/ Http/1.1  
+Accept: application/json
+
+###
+
+
+
+PUT {{API_Biblioteca_HostAddress}}/Api/v1/Libro/9 Http/1.1  
+Accept: application/json
+Content-type: application/json
+{
+    "id" : 8,
+    "titulo": "Prueba de http Testing",
+    "autor": "Maquiavelo",
+    "añoPublicacion": 1970,
+    "genero": "Drama",
+    "descripcion": "string",
+    "usuarioId": "string"
+}
+
+###
+
+
+DELETE {{API_Biblioteca_HostAddress}}/Api/v1/Libro/9 Http/1.1  
 Accept: application/json
 
 ###

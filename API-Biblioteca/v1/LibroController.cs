@@ -36,7 +36,6 @@ namespace API_Biblioteca.v1
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Create([FromBody] LibroDto Dto)
         {
@@ -69,12 +68,11 @@ namespace API_Biblioteca.v1
             try
             {
                 var result = await _libroServices.GetByIdAsync(id);
-                if (!result.exito)
+                if (!result.exito || result.dtoEntity is null)
                 {
                     return NoContent();
                 }
-
-                return Ok(result);
+                return Ok(result.dtoEntity);
             }
             catch (Exception ex)
             {
@@ -85,7 +83,7 @@ namespace API_Biblioteca.v1
 
 
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update([FromBody] LibroDto dto ,int id)
@@ -101,8 +99,7 @@ namespace API_Biblioteca.v1
                 {
                     return NoContent();
                 }
-
-                return Created();
+                return Accepted();
             }
             catch (Exception ex)
             {
@@ -112,7 +109,7 @@ namespace API_Biblioteca.v1
 
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int id)
@@ -122,10 +119,9 @@ namespace API_Biblioteca.v1
                 var result = await _libroServices.DeleteAsync(id);
                 if (!result)
                 {
-                    return BadRequest();
+                    return NoContent();
                 }
-
-                return Created();
+                return Accepted();
             }
             catch (Exception ex)
             {

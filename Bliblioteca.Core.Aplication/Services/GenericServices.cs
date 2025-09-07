@@ -63,21 +63,26 @@ namespace Bliblioteca.Core.Aplication.Services
             return false;
         }
 
-        public virtual async Task<(TDtoEntity? DtoEntity, bool exito)> GetByIdAsync(int id)
+        public virtual async Task<(TDtoEntity? dtoEntity, bool exito)> GetByIdAsync(int id)
         {
             if (id <= 0)
             {
-                return (null, false);
+                return (null,false);
             }
             try
             {              
-                var entity = await _genericRepository.GetByIdAsync(id);     
-                TDtoEntity? dtoEntity = _autoMapper.Map<TDtoEntity>(entity);
-                return (dtoEntity, true);
+                var entity = await _genericRepository.GetByIdAsync(id);
+                if (!entity.exito || entity.entityDb is null) 
+                {
+                    return (null, false);
+                }
+
+                var dtoEntity = _autoMapper.Map<TDtoEntity>(entity.entityDb);
+                return (dtoEntity,true);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en el servicio al obtener por id: {ex.Message}");
+                Console.WriteLine($"Error en el servicio al obtener la entidad por id: {ex.Message}");
                 if (ex.InnerException is not null)
                 {
                     Console.WriteLine($"Detalle interno: {ex.InnerException.Message}");

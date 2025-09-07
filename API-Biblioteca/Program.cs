@@ -32,8 +32,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.UseHealthChecks("/health");
-
+app.UseHealthChecks("/health");  
 app.MapControllers();
 
 await app.RunAsync();
