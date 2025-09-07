@@ -1,6 +1,6 @@
 @API_Biblioteca_HostAddress = http://localhost:7269
 
-GET {{API_Biblioteca_HostAddress}}/weatherforecast/
+GET {{API_Biblioteca_HostAddress}}Api/v1/Libro/ Http/1.1  
 Accept: application/json
 
 ###

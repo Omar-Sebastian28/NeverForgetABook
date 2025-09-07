@@ -1,6 +1,4 @@
-﻿using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
-using Microsoft.Extensions.Options;
+﻿using Asp.Versioning.ApiExplorer;
 
 namespace API_Biblioteca.Extesions
 {
@@ -16,7 +14,7 @@ namespace API_Biblioteca.Extesions
                 {
                     foreach (var apiVersion in versionDescriptions)
                     {
-                        var url = $"{apiVersion.GroupName}/swagger.json";
+                        var url = $"/swagger/{apiVersion.GroupName}/swagger.json";
                         var name = $"Biblioteca API - {apiVersion.GroupName.ToUpperInvariant()}";
                         options.SwaggerEndpoint(url, name);
                         Console.WriteLine($"{url} {name}");

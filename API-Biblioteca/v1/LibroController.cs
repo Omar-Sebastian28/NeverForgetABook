@@ -51,7 +51,6 @@ namespace API_Biblioteca.v1
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, "La creacion fallo.");
                 }
-
                 return Created();
             }
             catch (Exception ex)
