@@ -28,7 +28,7 @@ namespace API_Biblioteca.Extesions
                 {
                     Version = "v2.0",
                     Title = "Biblioteca API",
-                    Description = "This api will be responsible for overall data distribution.",
+                    Description = "This api (v2), will be responsible for overall data distribution.",
                     Contact = new OpenApiContact
                     {
                         Name = "Sebastián Omar J.M.",

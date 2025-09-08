@@ -1,6 +1,4 @@
-﻿using Asp.Versioning.ApiExplorer;
-
-namespace API_Biblioteca.Extesions
+﻿namespace API_Biblioteca.Extesions
 {
     public static class AppExtension
     {
