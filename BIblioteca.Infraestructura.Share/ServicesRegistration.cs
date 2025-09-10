@@ -18,8 +18,6 @@ namespace BIblioteca.Infraestructura.Share
             #region "Inyeccion de dependencia."
             services.AddScoped<IEmailServices, EmailServices>();
             #endregion
-
-
         }
     }
 }

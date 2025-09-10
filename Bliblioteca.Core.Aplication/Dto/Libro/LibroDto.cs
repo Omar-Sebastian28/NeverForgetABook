@@ -1,4 +1,4 @@
-﻿namespace Bliblioteca.Core.Aplication.Dto
+﻿namespace Bliblioteca.Core.Aplication.Dto.Libro
 {
     public class LibroDto
     {

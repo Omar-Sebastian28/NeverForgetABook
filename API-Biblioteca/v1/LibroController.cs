@@ -1,6 +1,6 @@
 ﻿using API_Biblioteca.Controllers;
 using Asp.Versioning;
-using Bliblioteca.Core.Aplication.Dto;
+using Bliblioteca.Core.Aplication.Dto.Libro;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Bliblioteca.Core.Aplication.Dto;
+using Bliblioteca.Core.Aplication.Dto.Libro;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Bliblioteca.Core.Domain.Entity;
 using Bliblioteca.Core.Domain.Interfaces;

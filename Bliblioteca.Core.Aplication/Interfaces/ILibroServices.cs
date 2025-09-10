@@ -1,4 +1,4 @@
-﻿using Bliblioteca.Core.Aplication.Dto;
+﻿using Bliblioteca.Core.Aplication.Dto.Libro;
 
 namespace Bliblioteca.Core.Aplication.Interfaces
 {

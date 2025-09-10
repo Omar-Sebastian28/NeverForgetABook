@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Bliblioteca.Core.Aplication.Dto;
+using Bliblioteca.Core.Aplication.Dto.Libro;
 using Bliblioteca.Core.Domain.Entity;
 
 namespace Bliblioteca.Core.Aplication.Mapeos

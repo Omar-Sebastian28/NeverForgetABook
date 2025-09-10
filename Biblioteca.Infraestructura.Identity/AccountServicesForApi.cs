@@ -1,5 +1,8 @@
 ﻿using System.Text;
 using Biblioteca.Infraestructura.Identity.Entities;
+using Bliblioteca.Core.Aplication.Dto.Email;
+using Bliblioteca.Core.Aplication.Dto.User;
+using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
@@ -11,14 +14,14 @@ namespace RegistroLegal.Infraestructura.Identity
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _singInManager;
-        //private readonly IEmailServices _emailServices;
+        private readonly IEmailServices _emailServices;
 
 
-        public AccountServicesForApi(UserManager<AppUser> userManager, SignInManager<AppUser> singInManager)
+        public AccountServicesForApi(UserManager<AppUser> userManager, SignInManager<AppUser> singInManager, IEmailServices emailServices)
         {
             _userManager = userManager;
             _singInManager = singInManager;
-           // _emailServices = emailServices;
+            _emailServices = emailServices;
         }
 
         //Autenticar la cuenta.
