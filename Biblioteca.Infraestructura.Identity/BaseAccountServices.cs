@@ -5,87 +5,25 @@ using Bliblioteca.Core.Aplication.Dto.User;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
 
-
-namespace RegistroLegal.Infraestructura.Identity
+namespace Biblioteca.Infraestructura.Identity
 {
-    public class AccountServicesForApi 
+    public class BaseAccountServices : IBaseAccountServices
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _singInManager;
         private readonly IEmailServices _emailServices;
 
-
-        public AccountServicesForApi(UserManager<AppUser> userManager, SignInManager<AppUser> singInManager, IEmailServices emailServices)
+        public BaseAccountServices(UserManager<AppUser> userManager, SignInManager<AppUser> singInManager, IEmailServices emailServices)
         {
             _userManager = userManager;
             _singInManager = singInManager;
             _emailServices = emailServices;
-        }
-
-        //Autenticar la cuenta.
-        public async Task<LoginReponseDto> AuthenticateAsync(LoginDto loginDto)
-        {
-            LoginReponseDto response = new()
-            {
-                Id = "",
-                Nombre = "",
-                Apellido = "",
-                Email = "",
-                UserName = "",
-                Role = "",
-                HasError = false,
-            };
-
-            var user = await _userManager.FindByNameAsync(loginDto.UserName);
-
-            if (user is null)
-            {
-                response.HasError = true;
-                response.Error = $"No se encontró ninguna cuenta asociada al nombre de usuario ingresado. Verifica que esté escrito correctamente o intenta con tu correo electrónico. Si el problema persiste, puedes crear una nueva cuenta o contactar al soporte.";
-                return response;
-            }
-
-            if (!user.EmailConfirmed)
-            {
-                response.HasError = true;
-                response.Error = $"Tu cuenta aún no ha sido activada. Por favor, revisa tu correo electrónico y sigue el enlace de confirmación para completar el registro..";
-                return response;
-            }
-         
-            var result = await _singInManager.PasswordSignInAsync(user.UserName ?? "", loginDto.Password, false, true);
-
-            if (!result.Succeeded)
-            {
-                response.HasError = true;
-                if (result.IsLockedOut)
-                {
-                    response.Error = "Has excedido el número máximo de intentos permitidos. Por seguridad, tu acceso ha sido bloqueado temporalmente. Podrás intentarlo nuevamente en 10 minutos.";
-                }
-                else 
-                {
-                    response.Error = "Las credenciales ingresadas no son váli1das. Verifica tu correo y contraseña, y vuelve a intentarlo.";
-                }
-                    return response;
-            }
-            
-            var roles = await _userManager.GetRolesAsync(user);
-
-            response.Id = user.Id;
-            response.Nombre = user.Nombre;
-            response.Apellido = user.Apellido;
-            response.Email = user.Email ?? "";
-            response.Phone = user.PhoneNumber;
-            response.IsVerified = user.EmailConfirmed;
-            response.Roles = roles.ToList();
-
-            return response;
-        }
+        }      
 
 
         //Eliminar un usuario.
-        public async Task<DeleteResponseDto> DeleteAsync(string userId)
+        public virtual async Task<DeleteResponseDto> DeleteAsync(string userId)
         {
             DeleteResponseDto response = new()
             {
@@ -111,7 +49,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Reseteo de contraseña.
-        public async Task<ResetPasswordResponseDto> ForgotPassword(ResetPasswordResponseDto dto)
+        public virtual async Task<ResetPasswordResponseDto> ForgotPassword(ResetPasswordResponseDto dto)
         {
             ResetPasswordResponseDto response = new()
             {
@@ -124,8 +62,8 @@ namespace RegistroLegal.Infraestructura.Identity
             if (entity is not null)
             {
                 entity.EmailConfirmed = false;
-                var resetUri = await VerificacionPasswordlUri(entity, dto.Origin ?? "");
-               
+                var resetToken = await VerificacionPassword(entity);
+
                 await _emailServices.SendAsync(new EmailRequestDto()
                 {
                     To = entity.Email,
@@ -144,7 +82,7 @@ namespace RegistroLegal.Infraestructura.Identity
                                 <div class='container'>
                                     <h2>Hola,</h2>
                                     <p>Recibimos una solicitud para restablecer tu contraseña. Si fuiste tú, puedes hacerlo haciendo clic en el siguiente botón:</p>
-                                    <p><a href='{resetUri}' class='button'>Restablecer contraseña</a></p>
+                                    <p><a href='resetToken' class='button'>{resetToken}</a></p>
                                     <p>Si no solicitaste este cambio, puedes ignorar este mensaje. Tu cuenta seguirá segura.</p>
                                     <div class='footer'>
                                         <p>Este mensaje fue generado automáticamente. Por favor, no respondas a este correo.</p>
@@ -164,7 +102,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Confirmacion de contraseña.
-        public async Task<ResetPasswordResponseDto> ConfirmForgotPassword(ResetPasswordRequestDto dto)
+        public virtual async Task<ResetPasswordResponseDto> ConfirmForgotPassword(ResetPasswordRequestDto dto)
         {
             ResetPasswordResponseDto response = new()
             {
@@ -198,7 +136,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Buscamos todos los usuarios con email confirmado y los no confirmados por igual.
-        public async Task<List<DtoUser>> GetAllUser(bool? isActive = true)
+        public virtual async Task<List<DtoUser>> GetAllUser(bool? isActive = true)
         {
 
             List<DtoUser> listUserDto = [];
@@ -213,12 +151,9 @@ namespace RegistroLegal.Infraestructura.Identity
                 usersQuery = usersQuery.Where(u => !u.EmailConfirmed);
             }
 
-            var listUser = await usersQuery.ToListAsync();
-
-            foreach (var item in listUser)
+            foreach (var item in usersQuery)
             {
                 var roleList = await _userManager.GetRolesAsync(item);
-
                 listUserDto.Add(new DtoUser()
                 {
                     Id = item.Id,
@@ -238,7 +173,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Registro para el user.
-        public async Task<ResponseDto> RegisterAsync(SaveUserDto saveUserDto, string origin)
+        public virtual async Task<ResponseDto> RegisterAsync(SaveUserDto saveUserDto)
         {
             ResponseDto response = new()
             {
@@ -288,18 +223,18 @@ namespace RegistroLegal.Infraestructura.Identity
                     response.HasError = true;
 
                     var error = result.Errors.Select(e => $"{e.Description}");
-                    var mensajePersonalizado = "No se pudo crear el usuario. Verifica lo siguiente:\n\n" + string.Join("\n", error);   
-                    
+                    var mensajePersonalizado = "No se pudo crear el usuario. Verifica lo siguiente:\n\n" + string.Join("\n", error);
+
                     response.Error = mensajePersonalizado;
                     return response;
                 }
-                     var getVerificationUri = await VerificacionEmailUri(user, origin);
-                    await _userManager.AddToRoleAsync(user, saveUserDto.Role);
-                    await _emailServices.SendAsync(new EmailRequestDto()
-                    {
-                        To = saveUserDto.Email,
-                        Subject = "Confirma tu cuenta en el sistema",
-                        HtmlBdy = $@"
+                var getVerificationToken = await VerificacionEmail(user);
+                await _userManager.AddToRoleAsync(user, saveUserDto.Role);
+                await _emailServices.SendAsync(new EmailRequestDto()
+                {
+                    To = saveUserDto.Email,
+                    Subject = "Confirma tu cuenta en el sistema",
+                    HtmlBdy = $@"
                                     <div style='font-family:Segoe UI, sans-serif; background-color:#f9f9f9; padding:40px;'>
                                         <div style='max-width:600px; margin:0 auto; background:white; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden;'>
         
@@ -312,13 +247,13 @@ namespace RegistroLegal.Infraestructura.Identity
                                             <div style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
                                                 <p>Hola <strong>{saveUserDto.Nombre}</strong>,</p>
             
-                                                <p>Gracias por registrarte en nuestro sistema. Para activar tu cuenta y comenzar a utilizar nuestros servicios, por favor confirma tu dirección de correo electrónico haciendo clic en el siguiente botón:</p>
+                                                <p>Gracias por registrarte en nuestro sistema. Para activar tu cuenta y comenzar a utilizar nuestros servicios, por favor confirma tu dirección de correo electrónico utilizando el siguiente token:</p>
 
                                                 <p style='text-align:center; margin:30px 0;'>
-                                                    <a href='{getVerificationUri}' 
+                                                    <a href='token' 
                                                        style='background-color:#28a745; color:white; padding:12px 24px; font-size:16px; 
                                                               font-weight:bold; text-decoration:none; border-radius:6px; display:inline-block;'>
-                                                        Confirmar cuenta
+                                                         {getVerificationToken}
                                                     </a>
                                                 </p>
 
@@ -334,9 +269,9 @@ namespace RegistroLegal.Infraestructura.Identity
                                             </div>
                                         </div>
                                     </div>"
-                    });
+                });
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 if (ex.InnerException != null)
@@ -366,7 +301,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Confirmamos la cuenta por email.
-        public async Task<string> ConfirmAccount(string userId, string token)
+        public virtual async Task<string> ConfirmAccount(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user is null)
@@ -391,7 +326,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Editamos el usuario.
-        public async Task<ResponseDto> EditUser(SaveUserDto saveUserDto, string origin, bool? creando = false)
+        public virtual async Task<ResponseDto> EditUser(SaveUserDto saveUserDto, bool? creando = false)
         {
             bool modeCreacion = creando ?? false;
 
@@ -419,7 +354,7 @@ namespace RegistroLegal.Infraestructura.Identity
             user.Email = saveUserDto.Email;
             user.PhoneNumber = saveUserDto.Phone;
             user.UserName = saveUserDto.UserName;
-            if (!modeCreacion) 
+            if (!modeCreacion)
             {
                 user.EmailConfirmed = saveUserDto.Email == user.NormalizedEmail?.ToLower();
             }
@@ -430,7 +365,7 @@ namespace RegistroLegal.Infraestructura.Identity
             var updateUser = await _userManager.UpdateAsync(user);
 
             if (updateUser.Succeeded)
-            {   
+            {
                 if (!userRoles.Contains(saveUserDto.Role))
                 {
                     await _userManager.RemoveFromRolesAsync(user, userRoles);
@@ -439,7 +374,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
                 if (!user.EmailConfirmed && !modeCreacion)
                 {
-                    var verificatioUri = await VerificacionEmailUri(user, origin);
+                    var verificationToken = await VerificacionEmail(user);
                     await _emailServices.SendAsync(new EmailRequestDto()
                     {
                         To = saveUserDto.Email,
@@ -461,13 +396,13 @@ namespace RegistroLegal.Infraestructura.Identity
                                         <tr>
                                           <td style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
                                             <p>Hola <strong>{saveUserDto.Nombre}</strong>,</p>
-                                            <p>Gracias por registrarte en nuestro sistema. Para completar el proceso y activar tu cuenta, haz clic en el siguiente botón seguro:</p>
+                                            <p>Gracias por registrarte en nuestro sistema. Para completar el proceso y activar tu cuenta, utiliza el siguiente token:</p>
 
                                             <p style='text-align:center; margin:30px 0;'>
-                                              <a href='{verificatioUri}' 
+                                              <a href='token' 
                                                  style='background:#28a745; color:#ffffff; padding:14px 28px; text-decoration:none; 
                                                         border-radius:6px; font-weight:bold; font-size:16px; display:inline-block;'>
-                                                 Confirmar cuenta
+                                                 {verificationToken}
                                               </a>
                                             </p>
 
@@ -516,7 +451,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Buscamos el usuario por email.
-        public async Task<DtoUser?> BuscarUsuarioPorEmail(string email)
+        public virtual async Task<DtoUser?> BuscarUsuarioPorEmail(string email)
         {
 
             var user = await _userManager.FindByEmailAsync(email);
@@ -545,7 +480,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Buscamos el usuario por id.
-        public async Task<DtoUser?> BuscarUsuarioPorId(string Id)
+        public virtual async Task<DtoUser?> BuscarUsuarioPorId(string Id)
         {
             var user = await _userManager.FindByIdAsync(Id);
 
@@ -574,7 +509,7 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
         //Buscamos el usuario por nombre de usuario.
-        public async Task<DtoUser?> BuscarUsuarioPorUserName(string userName)
+        public virtual async Task<DtoUser?> BuscarUsuarioPorUserName(string userName)
         {
             var user = await _userManager.FindByNameAsync(userName);
 
@@ -603,8 +538,8 @@ namespace RegistroLegal.Infraestructura.Identity
 
 
 
-        #region Metodos Privados
-        private async Task<string?> VerificacionEmailUri(AppUser user, string origin)
+        #region Metodos Protected
+        protected async Task<string?> VerificacionEmail(AppUser user)
         {
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
@@ -612,7 +547,14 @@ namespace RegistroLegal.Infraestructura.Identity
         }
 
 
-        private async Task<string?> VerificacionPasswordlUri(AppUser user, string origin)
+        protected async Task<string?> VerificacionPassword(AppUser user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            return token;
+        }
+
+        protected async Task<string?> ResetPassword(AppUser user)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));

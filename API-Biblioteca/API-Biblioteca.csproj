@@ -24,6 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Biblioteca.Infraestructura.Identity\Biblioteca.Infraestructura.Identity.csproj" />
+    <ProjectReference Include="..\BIblioteca.Infraestructura.Share\BIblioteca.Infraestructura.Share.csproj" />
     <ProjectReference Include="..\Bliblioteca.Core.Aplication\Bliblioteca.Core.Aplication.csproj" />
     <ProjectReference Include="..\Bliblioteca.Infraestructura.Persistencia\Bliblioteca.Infraestructura.Persistencia.csproj" />
   </ItemGroup>

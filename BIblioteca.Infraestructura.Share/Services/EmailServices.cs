@@ -1,9 +1,10 @@
 ﻿using Bliblioteca.Core.Aplication.Dto.Email;
 using Bliblioteca.Core.Domain.Settings;
 using Microsoft.Extensions.Options;
-using MimeKit;
+using MailKit;
 using Microsoft.Extensions.Logging;
 using Bliblioteca.Core.Aplication.Interfaces;
+using MimeKit;
 
 namespace BIblioteca.Infraestructura.Share.Services
 {

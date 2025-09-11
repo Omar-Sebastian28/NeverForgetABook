@@ -1,7 +1,8 @@
 using Bliblioteca.Infraestructura.Persistencia;
 using Bliblioteca.Core.Aplication;
 using API_Biblioteca.Extesions;
-
+using Biblioteca.Infraestructura.Identity;
+using BIblioteca.Infraestructura.Share;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +14,18 @@ builder.Services.AddOpenApi();
 var configuration = builder.Configuration;
 
 //Extension method.
-builder.Services.AddPersistenceInfrastructure(builder.Configuration);
+builder.Services.AddPersistenceInfrastructure(configuration);
 builder.Services.AddAplicationServices();
 builder.Services.AddSwaggerExtension();
 builder.Services.AddVersioningSwaggerExtension();
 builder.Services.AddHealthChecks();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddShareLayerIoc(configuration);
+builder.Services.AddLayerIdentityForWebApp(configuration);
+
 var app = builder.Build();
+await app.Services.AddRunSeeds();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

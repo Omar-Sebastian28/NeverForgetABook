@@ -6,7 +6,7 @@ namespace Bliblioteca.Infraestructura.Persistencia.Contexts
 {
     public class BibliotecaContext : DbContext
     {
-        public BibliotecaContext(DbContextOptions options) : base(options) { }
+        public BibliotecaContext(DbContextOptions<BibliotecaContext> options) : base(options) { }
 
         public DbSet<Libro> Libro { get; set; }
 
