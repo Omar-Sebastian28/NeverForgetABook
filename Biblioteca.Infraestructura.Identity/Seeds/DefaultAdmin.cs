@@ -11,7 +11,7 @@ namespace Biblioteca.Infraestructura.Identity.Seeds
         {
             AppUser user = new AppUser()
             {
-                Nombre = "Sebastian",
+                Nombre = "Sebastian",              
                 Apellido = "Joaquín M.",
                 UserName = "admin22",
                 Email = "omarsebastian@gmail.com",

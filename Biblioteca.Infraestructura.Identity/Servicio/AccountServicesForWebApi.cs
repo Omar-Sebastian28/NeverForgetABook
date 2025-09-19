@@ -63,17 +63,16 @@ namespace Biblioteca.Infraestructura.Identity.Servicio
                 return response;
             }
 
-            JwtSecurityToken jwtSecurityToken = await GenerateJWTToken(user);
+            JwtSecurityToken jwtSecurityToken = await GenerateJwtToken(user);
 
             response.Nombre = user.Nombre;
             response.Apellido = user.Apellido;  
             response.AccessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-
             return response;
         }
 
 
-        private async Task<JwtSecurityToken> GenerateJWTToken(AppUser user) 
+        private async Task<JwtSecurityToken> GenerateJwtToken(AppUser user) 
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
@@ -99,7 +98,6 @@ namespace Biblioteca.Infraestructura.Identity.Servicio
                 expires: DateTime.UtcNow.AddMinutes(_JwtSettings.DurationInMinutes),
                 signingCredentials : singingCredentials
             );
-
             return token;
         }
     }

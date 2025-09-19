@@ -1,12 +1,13 @@
-﻿using API_Biblioteca.Controllers;
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Bliblioteca.Core.Aplication.Dto.Libro;
 using Bliblioteca.Core.Aplication.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API_Biblioteca.v1
+namespace API_Biblioteca.Controllers.v1
 {
     [ApiVersion("1.0")]
+    [Authorize]
     public class LibroController : BaseApiController
     {
         private readonly ILibroServices _libroServices;

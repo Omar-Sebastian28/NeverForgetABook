@@ -99,6 +99,9 @@ namespace Biblioteca.Infraestructura.Identity
                         return f.Response.WriteAsync(result);
                     }
                 };
+            }).AddCookie(IdentityConstants.ApplicationScheme, opt => 
+            {
+                opt.ExpireTimeSpan = TimeSpan.FromMinutes(180);
             });
             #endregion
 

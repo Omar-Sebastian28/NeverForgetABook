@@ -3,7 +3,7 @@ using Asp.Versioning;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API_Biblioteca.v2
+namespace API_Biblioteca.Controllers.v2
 {
     [ApiVersion("2.0")]
     public class LibroControllerV2 : BaseApiController
