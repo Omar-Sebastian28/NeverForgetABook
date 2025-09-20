@@ -10,9 +10,9 @@ namespace Bliblioteca.Core.Aplication.Interfaces
         Task<string> ConfirmAccount(string userId, string token);
         Task<ResetPasswordResponseDto> ConfirmForgotPassword(ResetPasswordRequestDto dto);
         Task<DeleteResponseDto> DeleteAsync(string userId);
-        Task<ResponseDto> EditUser(SaveUserDto saveUserDto, bool? creando = false);
+        Task<ResponseDto> EditUser(EditUserDto saveUserDto, bool? creando = false);
         Task<ResetPasswordResponseDto> ForgotPassword(ResetPasswordResponseDto dto);
         Task<List<DtoUser>> GetAllUser(bool? isActive = true);
-        Task<ResponseDto> RegisterAsync(SaveUserDto saveUserDto);
+        Task<ResponseDto> RegisterAsync(CreateUserDto saveUserDto);
     }
 }

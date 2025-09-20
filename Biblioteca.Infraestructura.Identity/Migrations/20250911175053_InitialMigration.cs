@@ -77,7 +77,7 @@ namespace Biblioteca.Infraestructura.Identity.Migrations
                         column: x => x.RoleId,
                         principalSchema: "Identity",
                         principalTable: "Roles",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -100,7 +100,7 @@ namespace Biblioteca.Infraestructura.Identity.Migrations
                         column: x => x.UserId,
                         principalSchema: "Identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -122,7 +122,7 @@ namespace Biblioteca.Infraestructura.Identity.Migrations
                         column: x => x.UserId,
                         principalSchema: "Identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -144,7 +144,7 @@ namespace Biblioteca.Infraestructura.Identity.Migrations
                         column: x => x.UserId,
                         principalSchema: "Identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -164,14 +164,14 @@ namespace Biblioteca.Infraestructura.Identity.Migrations
                         column: x => x.RoleId,
                         principalSchema: "Identity",
                         principalTable: "Roles",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
                         principalSchema: "Identity",
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 

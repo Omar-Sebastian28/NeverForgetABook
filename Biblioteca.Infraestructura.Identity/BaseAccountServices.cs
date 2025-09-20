@@ -173,7 +173,7 @@ namespace Biblioteca.Infraestructura.Identity
 
 
         //Registro para el user.
-        public virtual async Task<ResponseDto> RegisterAsync(SaveUserDto saveUserDto)
+        public virtual async Task<ResponseDto> RegisterAsync(CreateUserDto createUserDto)
         {
             ResponseDto response = new()
             {
@@ -183,19 +183,20 @@ namespace Biblioteca.Infraestructura.Identity
                 Email = "",
                 UserName = "",
                 Password = "",
+                Phone = "",
                 HasError = false,
             };
 
-            var userWithSameUserName = await _userManager.FindByNameAsync(saveUserDto.UserName);
+            var userWithSameUserName = await _userManager.FindByNameAsync(createUserDto.UserName);
 
             if (userWithSameUserName is not null)
             {
                 response.HasError = true;
-                response.Error = $"'{saveUserDto.UserName}' esta en uso.";
+                response.Error = $"'{createUserDto.UserName}' esta en uso.";
                 return response;
             }
 
-            var userWithSameEmail = await _userManager.FindByEmailAsync(saveUserDto.Email);
+            var userWithSameEmail = await _userManager.FindByEmailAsync(createUserDto.Email);
 
             if (userWithSameEmail is not null)
             {
@@ -206,17 +207,16 @@ namespace Biblioteca.Infraestructura.Identity
 
             AppUser user = new()
             {
-                Nombre = saveUserDto.Nombre,
-                Apellido = saveUserDto.Apellido,
-                UserName = saveUserDto.UserName,
-                Email = saveUserDto.Email,
-                EmailConfirmed = false,
-                ImagenPerfil = saveUserDto.ImagenPerfil
+                Nombre = createUserDto.Nombre,
+                Apellido = createUserDto.Apellido,
+                UserName = createUserDto.UserName,
+                Email = createUserDto.Email,
+                EmailConfirmed = false,        
             };
 
             try
             {
-                var result = await _userManager.CreateAsync(user, saveUserDto.Password);
+                var result = await _userManager.CreateAsync(user, createUserDto.Password);
 
                 if (!result.Succeeded)
                 {
@@ -229,10 +229,10 @@ namespace Biblioteca.Infraestructura.Identity
                     return response;
                 }
                 var getVerificationToken = await VerificacionEmail(user);
-                await _userManager.AddToRoleAsync(user, saveUserDto.Role);
+                await _userManager.AddToRoleAsync(user, createUserDto.Role);
                 await _emailServices.SendAsync(new EmailRequestDto()
                 {
-                    To = saveUserDto.Email,
+                    To = createUserDto.Email,
                     Subject = "Confirma tu cuenta en el sistema",
                     HtmlBdy = $@"
                                     <div style='font-family:Segoe UI, sans-serif; background-color:#f9f9f9; padding:40px;'>
@@ -245,7 +245,7 @@ namespace Biblioteca.Infraestructura.Identity
 
                                             <!-- Cuerpo -->
                                             <div style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
-                                                <p>Hola <strong>{saveUserDto.Nombre}</strong>,</p>
+                                                <p>Hola <strong>{createUserDto.Nombre}</strong>,</p>
             
                                                 <p>Gracias por registrarte en nuestro sistema. Para activar tu cuenta y comenzar a utilizar nuestros servicios, por favor confirma tu dirección de correo electrónico utilizando el siguiente token:</p>
 
@@ -291,9 +291,8 @@ namespace Biblioteca.Infraestructura.Identity
             response.Apellido = user.Apellido;
             response.UserName = user.UserName;
             response.Email = user.Email;
-            response.ImagenPerfil = user.ImagenPerfil;
             response.Password = user.PasswordHash ?? "";
-            response.Phone = user.PhoneNumber;
+            response.Phone = user.PhoneNumber ?? "";
             response.Roles = roles.ToList();
 
             return response;
@@ -326,7 +325,7 @@ namespace Biblioteca.Infraestructura.Identity
 
 
         //Editamos el usuario.
-        public virtual async Task<ResponseDto> EditUser(SaveUserDto saveUserDto, bool? creando = false)
+        public virtual async Task<ResponseDto> EditUser(EditUserDto saveUserDto, bool? creando = false)
         {
             bool modeCreacion = creando ?? false;
 
@@ -338,10 +337,12 @@ namespace Biblioteca.Infraestructura.Identity
                 Email = "",
                 UserName = "",
                 Password = "",
+                Phone = "",
                 HasError = false,
             };
 
-            var user = await _userManager.FindByIdAsync(saveUserDto.Id);
+            var user = await _userManager.FindByIdAsync(saveUserDto.UserId);
+
             if (user is null)
             {
                 response.HasError = true;
@@ -354,12 +355,11 @@ namespace Biblioteca.Infraestructura.Identity
             user.Email = saveUserDto.Email;
             user.PhoneNumber = saveUserDto.Phone;
             user.UserName = saveUserDto.UserName;
+            user.ImagenPerfil = string.IsNullOrWhiteSpace(saveUserDto.ImagenPerfil.ToString()) ? user.ImagenPerfil : saveUserDto.ImagenPerfil.ToString(); // Recuerda cambiar esto para guardar la imagen correctamente.
             if (!modeCreacion)
             {
                 user.EmailConfirmed = saveUserDto.Email == user.NormalizedEmail?.ToLower();
             }
-            user.ImagenPerfil = string.IsNullOrWhiteSpace(saveUserDto.ImagenPerfil) ? user.ImagenPerfil : saveUserDto.ImagenPerfil;
-
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var updateUser = await _userManager.UpdateAsync(user);

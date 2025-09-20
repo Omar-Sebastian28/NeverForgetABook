@@ -2,7 +2,7 @@
 {
     public enum RolesDefault
     {
-        SuperAdmin = 1,
+        SuperAdmin,
         Admin,
         Usuario
     }
