@@ -9,7 +9,7 @@ namespace Biblioteca.Infraestructura.Identity.Seeds
     {
         public static async Task CreateDefaultUser(UserManager<AppUser> userManager)
         {
-            AppUser user = new AppUser()
+            AppUser user = new()
             {
                 Nombre = "Ricardo Enmanuel",
                 Apellido = "Joaquín Genao",

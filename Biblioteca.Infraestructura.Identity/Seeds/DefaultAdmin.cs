@@ -23,7 +23,7 @@ namespace Biblioteca.Infraestructura.Identity.Seeds
             if (await userManager.Users.AllAsync(u => u.UserName != user.UserName || u.Id != user.Id)) 
             {            
                 var result = await userManager.FindByEmailAsync(user.Email);
-                if (result != null) 
+                if (result == null) 
                 {
                     var cretedSuccedd = await userManager.CreateAsync(user, "Pa$$word123!");
 
