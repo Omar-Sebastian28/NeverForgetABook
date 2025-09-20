@@ -1,4 +1,5 @@
-﻿using Bliblioteca.Core.Aplication.Dto.User;
+﻿using Bliblioteca.Core.Aplication.Dto.Response;
+using Bliblioteca.Core.Aplication.Dto.User;
 
 namespace Bliblioteca.Core.Aplication.Interfaces
 {
@@ -7,7 +8,7 @@ namespace Bliblioteca.Core.Aplication.Interfaces
         Task<DtoUser?> BuscarUsuarioPorEmail(string email);
         Task<DtoUser?> BuscarUsuarioPorId(string Id);
         Task<DtoUser?> BuscarUsuarioPorUserName(string userName);
-        Task<string> ConfirmAccount(string userId, string token);
+        Task<ConfirmRequestDto> ConfirmAccount(string userId, string token);
         Task<ResetPasswordResponseDto> ConfirmForgotPassword(ResetPasswordRequestDto dto);
         Task<DeleteResponseDto> DeleteAsync(string userId);
         Task<ResponseDto> EditUser(EditUserDto saveUserDto, bool? creando = false);

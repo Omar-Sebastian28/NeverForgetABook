@@ -3,12 +3,17 @@ using Bliblioteca.Core.Aplication;
 using API_Biblioteca.Extesions;
 using Biblioteca.Infraestructura.Identity;
 using BIblioteca.Infraestructura.Share;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(opt => 
+    {
+        opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 var configuration = builder.Configuration;

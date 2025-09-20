@@ -1,4 +1,6 @@
-﻿namespace Bliblioteca.Core.Aplication.Dto.User
+﻿using Bliblioteca.Core.Domain.Enums;
+
+namespace Bliblioteca.Core.Aplication.Dto.User
 {
     public class EditUserDto
     {
@@ -11,6 +13,6 @@
         public required string Email { get; set; }
         public required string Phone { get; set; }
         public required string ImagenPerfil { get; set; }
-        public required string Role { get; set; }
+        public required Roles Rol { get; set; }
     }
 }

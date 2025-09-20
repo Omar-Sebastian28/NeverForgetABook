@@ -1,10 +1,11 @@
-﻿using System.Text;
-using Biblioteca.Infraestructura.Identity.Entities;
+﻿using Biblioteca.Infraestructura.Identity.Entities;
 using Bliblioteca.Core.Aplication.Dto.Email;
+using Bliblioteca.Core.Aplication.Dto.Response;
 using Bliblioteca.Core.Aplication.Dto.User;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace Biblioteca.Infraestructura.Identity
 {
@@ -211,7 +212,7 @@ namespace Biblioteca.Infraestructura.Identity
                 Apellido = createUserDto.Apellido,
                 UserName = createUserDto.UserName,
                 Email = createUserDto.Email,
-                EmailConfirmed = false,        
+                EmailConfirmed = false,
             };
 
             try
@@ -300,12 +301,21 @@ namespace Biblioteca.Infraestructura.Identity
 
 
         //Confirmamos la cuenta por email.
-        public virtual async Task<string> ConfirmAccount(string userId, string token)
+        public virtual async Task<ConfirmRequestDto> ConfirmAccount(string userName, string token)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user is null)
+            ConfirmRequestDto confirmRequest = new()
             {
-                return "No se encontro el usuario. Por favor, registrese.";
+                Error = [],
+                HasError = false,
+                Message = ""
+            };
+
+            var user = await _userManager.FindByIdAsync(userName);
+            if (user is null)
+            {   
+                confirmRequest.HasError = true;
+                confirmRequest.Error?.Add("No se encontro ninguna coincidencia con ese nombre de usuario, rectifique. Por favor.");
+                return confirmRequest;
             }
 
             var descodeToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
@@ -314,11 +324,15 @@ namespace Biblioteca.Infraestructura.Identity
 
             if (!verificacionUser.Succeeded)
             {
-                return $"El email: {user.Email} no se pudo confirmar correctamente.";
+                confirmRequest.HasError = true;
+                confirmRequest.Error?.Add($"No se pudo confirmar este email {user.Email}, intente de nuevo.");
+                return confirmRequest;
             }
             else
             {
-                return "Gracias por confirmar su correo. ya puedes utilizar nuestra app.";
+                confirmRequest.HasError = false;
+                confirmRequest.Message = $"Gracias por confirmar su correo. ya puedes utilizar nuestra app.";
+                return confirmRequest;
             }
         }
 
@@ -366,10 +380,10 @@ namespace Biblioteca.Infraestructura.Identity
 
             if (updateUser.Succeeded)
             {
-                if (!userRoles.Contains(saveUserDto.Role))
+                if (!userRoles.Contains(saveUserDto.Rol.ToString()))
                 {
                     await _userManager.RemoveFromRolesAsync(user, userRoles);
-                    await _userManager.AddToRoleAsync(user, saveUserDto.Role);
+                    await _userManager.AddToRoleAsync(user, saveUserDto.Rol.ToString());
                 }
 
                 if (!user.EmailConfirmed && !modeCreacion)

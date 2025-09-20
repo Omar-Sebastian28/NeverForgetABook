@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Bliblioteca.Core.Aplication.Dto.Response;
 using Bliblioteca.Core.Aplication.Dto.User;
 using Bliblioteca.Core.Aplication.Helper;
 using Bliblioteca.Core.Aplication.Interfaces;
@@ -16,7 +17,7 @@ namespace API_Biblioteca.Controllers.v1
             _accountServicesForWebApi = accountServicesForWebApi;
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -42,7 +43,7 @@ namespace API_Biblioteca.Controllers.v1
 
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -62,7 +63,7 @@ namespace API_Biblioteca.Controllers.v1
                     Phone = basicUseDto.Phone,
                     Email = basicUseDto.Email,
                     Password = basicUseDto.Password,
-                    Role = Roles.Usuario.ToString(),
+                    Role = basicUseDto.Rol.ToString(),
                 });
                 if (!responseUser.HasError || responseUser.Error is not null)
                 {
@@ -76,12 +77,39 @@ namespace API_Biblioteca.Controllers.v1
                         Password = responseUser.Password,
                         UserName = responseUser.UserName,
                         Phone = responseUser.Phone,
-                        Role = basicUseDto.Role,
+                        Rol = basicUseDto.Rol,
                         ImagenPerfil = imagenFile
                     }, true);
                     return Ok(responseUser);                   
                 }
                 return BadRequest(responseUser.Error);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpPost("confirm-account")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ConfirmRequestDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = (typeof(ConfirmRequestDto)))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userName, string token)
+        {
+            if (!string.IsNullOrWhiteSpace(userName) || !string.IsNullOrEmpty(token)) 
+            {
+                return BadRequest("El nombre de usuario y el token son obligatorios.");
+            }
+            try
+            {
+                var result = await _accountServicesForWebApi.ConfirmAccount(userName, token);
+                if (!result.HasError && result.Message is not null)
+                {
+                    return Ok(result.Message);
+                }
+
+                return BadRequest(result.Error);
             }
             catch (Exception ex)
             {

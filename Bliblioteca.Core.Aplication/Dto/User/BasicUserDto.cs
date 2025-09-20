@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Bliblioteca.Core.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Bliblioteca.Core.Aplication.Dto.User
 {
@@ -13,6 +14,6 @@ namespace Bliblioteca.Core.Aplication.Dto.User
         public required string Email { get; set; }
         public required string Phone { get; set; }
         public required IFormFile ImagenPerfil { get; set; }
-        public required string Role { get; set; }
+        public required Roles Rol { get; set; }
     }
 }
