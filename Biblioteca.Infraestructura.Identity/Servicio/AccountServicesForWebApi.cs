@@ -16,7 +16,7 @@ namespace Biblioteca.Infraestructura.Identity.Servicio
         private readonly SignInManager<AppUser> _singInManager;
         private readonly JwtSettings _JwtSettings;
 
-        public AccountServicesForWebApi(UserManager<AppUser> userManager, SignInManager<AppUser> singInManager, IEmailServices emailServices, IOptions<JwtSettings> JwtSettings) : base(userManager, singInManager, emailServices)
+        public AccountServicesForWebApi(UserManager<AppUser> userManager, SignInManager<AppUser> singInManager, IEmailServices emailServices, IOptions<JwtSettings> JwtSettings) : base(userManager, emailServices)
         {
             _userManager = userManager;
             _singInManager = singInManager;

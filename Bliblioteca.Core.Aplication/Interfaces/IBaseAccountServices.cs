@@ -13,7 +13,7 @@ namespace Bliblioteca.Core.Aplication.Interfaces
         Task<DeleteResponseDto> DeleteAsync(string userId);
         Task<ResponseDto> EditUser(EditUserDto saveUserDto, bool? creando = false);
         Task<ResetPasswordResponseDto> ForgotPassword(ResetPasswordResponseDto dto);
-        Task<List<DtoUser>> GetAllUser(bool? isActive = true);
+        Task<List<DtoUser>> GetAllUser(bool isActive);
         Task<ResponseDto> RegisterAsync(CreateUserDto saveUserDto);
     }
 }

@@ -5,6 +5,7 @@ using Bliblioteca.Core.Aplication.Dto.User;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace Biblioteca.Infraestructura.Identity
@@ -12,13 +13,11 @@ namespace Biblioteca.Infraestructura.Identity
     public class BaseAccountServices : IBaseAccountServices
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _singInManager;
         private readonly IEmailServices _emailServices;
 
-        public BaseAccountServices(UserManager<AppUser> userManager, SignInManager<AppUser> singInManager, IEmailServices emailServices)
+        public BaseAccountServices(UserManager<AppUser> userManager, IEmailServices emailServices)
         {
-            _userManager = userManager;
-            _singInManager = singInManager;
+            _userManager = userManager;   
             _emailServices = emailServices;
         }      
 
@@ -190,38 +189,40 @@ namespace Biblioteca.Infraestructura.Identity
 
 
         //Buscamos todos los usuarios con email confirmado y los no confirmados por igual.
-        public virtual async Task<List<DtoUser>> GetAllUser(bool? isActive = true)
+        public virtual async Task<List<DtoUser>> GetAllUser(bool isActive)
         {
-
+            var filtro = new List<AppUser>();   
             List<DtoUser> listUserDto = [];
             var usersQuery = _userManager.Users;
 
-            if (isActive != null && isActive == true)
+            if (isActive)
             {
-                usersQuery = usersQuery.Where(u => u.EmailConfirmed == true);
+               filtro = await usersQuery.Where(u => u.EmailConfirmed == true).ToListAsync();
             }
             else
             {
-                usersQuery = usersQuery.Where(u => !u.EmailConfirmed);
+               filtro = await usersQuery.Where(u => !u.EmailConfirmed).ToListAsync();
             }
 
-            foreach (var item in usersQuery)
+            if (filtro.Count != 0 && filtro.Count > 0)
             {
-                var roleList = await _userManager.GetRolesAsync(item);
-                listUserDto.Add(new DtoUser()
+                foreach (var item in filtro)
                 {
-                    Id = item.Id,
-                    Nombre = item.Nombre,
-                    Apellido = item.Apellido,
-                    Email = item.Email ?? "",
-                    UserName = item.UserName ?? "",
-                    ImagenPerfil = item.ImagenPerfil,
-                    Phone = item.PhoneNumber,
-                    IsVerified = item.EmailConfirmed,
-                    Role = roleList.FirstOrDefault() ?? ""
-                });
+                    var roleList = await _userManager.GetRolesAsync(item);
+                    listUserDto.Add(new DtoUser()
+                    {
+                        Id = item.Id,
+                        Nombre = item.Nombre,
+                        Apellido = item.Apellido,
+                        Email = item.Email ?? "",
+                        UserName = item.UserName ?? "",
+                        ImagenPerfil = item.ImagenPerfil,
+                        Phone = item.PhoneNumber,
+                        IsVerified = item.EmailConfirmed,
+                        Role = roleList.FirstOrDefault() ?? ""
+                    });
+                }
             }
-
             return listUserDto;
         }
 
@@ -393,7 +394,7 @@ namespace Biblioteca.Infraestructura.Identity
 
 
         //Editamos el usuario.
-        public virtual async Task<ResponseDto> EditUser(EditUserDto saveUserDto, bool? creando = false)
+        public virtual async Task<ResponseDto> EditUser(EditUserDto editUserDto, bool? creando = false)
         {
             bool modeCreacion = creando ?? false;
 
@@ -409,7 +410,7 @@ namespace Biblioteca.Infraestructura.Identity
                 HasError = false,
             };
 
-            var user = await _userManager.FindByIdAsync(saveUserDto.UserId);
+            var user = await _userManager.FindByIdAsync(editUserDto.UserId ?? "");
 
             if (user is null)
             {
@@ -418,15 +419,15 @@ namespace Biblioteca.Infraestructura.Identity
                 return response;
             }
 
-            user.Nombre = saveUserDto.Nombre;
-            user.Apellido = saveUserDto.Apellido;
-            user.Email = saveUserDto.Email;
-            user.PhoneNumber = saveUserDto.Phone;
-            user.UserName = saveUserDto.UserName;
-            user.ImagenPerfil = string.IsNullOrWhiteSpace(saveUserDto.ImagenPerfil.ToString()) ? user.ImagenPerfil : saveUserDto.ImagenPerfil.ToString(); // Recuerda cambiar esto para guardar la imagen correctamente.
+            user.Nombre = editUserDto.Nombre;
+            user.Apellido = editUserDto.Apellido;
+            user.Email = editUserDto.Email;
+            user.PhoneNumber = editUserDto.Phone;
+            user.UserName = editUserDto.UserName;
+            user.ImagenPerfil = string.IsNullOrWhiteSpace(editUserDto.ImagenPerfil) ? user.ImagenPerfil : editUserDto.ImagenPerfil;
             if (!modeCreacion)
             {
-                user.EmailConfirmed = saveUserDto.Email == user.NormalizedEmail?.ToLower();
+                user.EmailConfirmed = editUserDto.Email == user.NormalizedEmail?.ToLower();
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -434,10 +435,10 @@ namespace Biblioteca.Infraestructura.Identity
 
             if (updateUser.Succeeded)
             {
-                if (!userRoles.Contains(saveUserDto.Rol.ToString()))
+                if (!userRoles.Contains(editUserDto.Rol.ToString()))
                 {
                     await _userManager.RemoveFromRolesAsync(user, userRoles);
-                    await _userManager.AddToRoleAsync(user, saveUserDto.Rol.ToString());
+                    await _userManager.AddToRoleAsync(user, editUserDto.Rol.ToString());
                 }
 
                 if (!user.EmailConfirmed && !modeCreacion)
@@ -445,7 +446,7 @@ namespace Biblioteca.Infraestructura.Identity
                     var verificationToken = await VerificacionEmail(user);
                     await _emailServices.SendAsync(new EmailRequestDto()
                     {
-                        To = saveUserDto.Email,
+                        To = editUserDto.Email,
                         Subject = "Confirma tu cuenta",
                         HtmlBdy = $@"
                             <table width='100%' cellpadding='0' cellspacing='0' style='font-family:Segoe UI, sans-serif; background-color:#f3f4f6; padding:30px 0;'>
@@ -463,7 +464,7 @@ namespace Biblioteca.Infraestructura.Identity
                                     <!-- Cuerpo -->
                                     <tr>
                                       <td style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
-                                        <p>Hola <strong>{saveUserDto.Nombre}</strong>,</p>
+                                        <p>Hola <strong>{editUserDto.Nombre}</strong>,</p>
                                         <p>Gracias por registrarte en nuestro sistema. Para completar el proceso y activar tu cuenta, utiliza el siguiente código de verificación:</p>
 
                                         <!-- Token -->
@@ -497,11 +498,10 @@ namespace Biblioteca.Infraestructura.Identity
 
                     });
                 }
-
-                if (!string.IsNullOrEmpty(saveUserDto.Password) && !modeCreacion)
+                if (!string.IsNullOrEmpty(editUserDto.Password) && !modeCreacion)
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    await _userManager.ResetPasswordAsync(user, token, saveUserDto.Password);
+                    await _userManager.ResetPasswordAsync(user, token, editUserDto.Password);
                 }
             }
 
@@ -513,7 +513,6 @@ namespace Biblioteca.Infraestructura.Identity
             response.UserName = user.UserName;
             response.Email = user.Email;
             response.ImagenPerfil = user.ImagenPerfil;
-            response.Password = user.PasswordHash ?? "";
             response.Phone = user.PhoneNumber;
             response.Roles = updateRoles.ToList();
 

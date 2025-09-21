@@ -4,7 +4,7 @@ namespace Bliblioteca.Core.Aplication.Dto.User
 {
     public class EditUserDto
     {
-        public required string UserId { get; set; }
+        public string? UserId { get; set; }
         public required string Nombre { get; set; }
         public required string Apellido { get; set; }
 
