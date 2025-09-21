@@ -146,7 +146,6 @@ namespace API_Biblioteca.Controllers.v1
             }
         }
 
-        //Revisar este metodo tiene una falla.
         [HttpPost("confirm-change-password")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
