@@ -40,7 +40,6 @@ namespace Biblioteca.Infraestructura.Identity
                 opt.SignIn.RequireConfirmedEmail = true;
             });
 
-
             services.AddIdentityCore<AppUser>()
                     .AddRoles<IdentityRole>()
                     .AddSignInManager()
@@ -73,7 +72,7 @@ namespace Biblioteca.Infraestructura.Identity
                     ValidIssuer = config["JwtSettings:Issuer"],
                     ValidAudience = config["JwtSettings:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:SecretKey"] ?? "")),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromMinutes(2)
                 };
                 opt.Events = new JwtBearerEvents
                 {
@@ -83,7 +82,7 @@ namespace Biblioteca.Infraestructura.Identity
                         af.Response.StatusCode = 500;
                         af.Response.ContentType = "application/json";
                         var result = JsonSerializer.Serialize(new { error = "Ocurrio un error al procesar la petición", code = 500});
-                        return  af.Response.WriteAsync(af.Exception.Message.ToString());
+                        return af.Response.WriteAsync(result);
                     }, 
                     OnChallenge = c =>
                     {
@@ -97,7 +96,7 @@ namespace Biblioteca.Infraestructura.Identity
                     {
                         f.Response.StatusCode = 403;
                         f.Response.ContentType = "application/json";
-                        var result = System.Text.Json.JsonSerializer.Serialize(new { error = "You are not authorized to access this resource" });
+                        var result = JsonSerializer.Serialize(new { error = "You are not authorized to access this resource", code = 403 });
                         return f.Response.WriteAsync(result);
                     }
                 };

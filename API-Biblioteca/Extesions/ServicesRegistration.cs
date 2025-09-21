@@ -46,7 +46,6 @@ namespace API_Biblioteca.Extesions
                     BearerFormat = "JWT",
                     Description = "Input your Bearer token in this format 'Bearer {your token here}' to access this API"
                 });
-
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -60,7 +59,7 @@ namespace API_Biblioteca.Extesions
                             Scheme = "Bearer",
                             Name = "Bearer",
                             In = ParameterLocation.Header
-                        }, new List<string>()
+                        },new List<string>()
                     }
                 });
             });
