@@ -33,7 +33,7 @@ namespace Biblioteca.Infraestructura.Identity
                 opt.Password.RequireUppercase = true;
 
                 opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                opt.Lockout.MaxFailedAccessAttempts = 6;
+                opt.Lockout.MaxFailedAccessAttempts = 3;
 
                 opt.User.RequireUniqueEmail = true;
                 opt.SignIn.RequireConfirmedEmail = true;
