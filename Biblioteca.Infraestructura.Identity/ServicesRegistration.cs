@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
 
 
 namespace Biblioteca.Infraestructura.Identity
@@ -48,7 +49,7 @@ namespace Biblioteca.Infraestructura.Identity
 
             services.Configure<DataProtectionTokenProviderOptions>(opt =>
             {
-                opt.TokenLifespan = TimeSpan.FromHours(12);
+                opt.TokenLifespan = TimeSpan.FromHours(1);
             });
 
 
@@ -80,7 +81,8 @@ namespace Biblioteca.Infraestructura.Identity
                     {
                         af.NoResult();
                         af.Response.StatusCode = 500;
-                        af.Response.ContentType = "text/plain";
+                        af.Response.ContentType = "application/json";
+                        var result = JsonSerializer.Serialize(new { error = "Ocurrio un error al procesar la petición", code = 500});
                         return  af.Response.WriteAsync(af.Exception.Message.ToString());
                     }, 
                     OnChallenge = c =>
@@ -88,7 +90,7 @@ namespace Biblioteca.Infraestructura.Identity
                         c.HandleResponse();
                         c.Response.StatusCode = 401;
                         c.Response.ContentType = "application/json";
-                        var result = System.Text.Json.JsonSerializer.Serialize(new { error = "You are not Authorized" });
+                        var result = JsonSerializer.Serialize(new { error = "You are not Authorized", code = 401});
                         return c.Response.WriteAsync(result);
                     },
                     OnForbidden = f =>
