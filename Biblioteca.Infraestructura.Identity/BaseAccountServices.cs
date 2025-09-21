@@ -146,13 +146,25 @@ namespace Biblioteca.Infraestructura.Identity
         //Confirmacion de contraseña.
         public virtual async Task<ResetPasswordResponseDto> ConfirmForgotPassword(ResetPasswordRequestDto dto)
         {
+            var passwordHasher = new PasswordHasher<AppUser>();
             ResetPasswordResponseDto response = new()
             {
                 UserName = "",
                 HasError = false,
             };
-
+                 
             var user = await _userManager.FindByNameAsync(dto.UserName);
+
+            if (user != null)
+            {
+                var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash ?? "", dto.Password);
+                if (result == PasswordVerificationResult.Success) 
+                {
+                    response.HasError = true;
+                    response.Error = "La nueva contraseña no puede ser igual a la anterior.";
+                    return response;
+                }
+            }           
             if (user is not null)
             {
                 var tokenUser = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(dto.Token));

@@ -1,5 +1,4 @@
 ﻿using Asp.Versioning;
-using Bliblioteca.Core.Aplication.Dto.Response;
 using Bliblioteca.Core.Aplication.Dto.User;
 using Bliblioteca.Core.Aplication.Helper;
 using Bliblioteca.Core.Aplication.Interfaces;
