@@ -19,13 +19,18 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LibroDto))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get()
         {
             try
             {
                 var listLibros = await _libroServices.GetAllListAsync();
-
-                if (listLibros is null || listLibros.Count == 0) { return NoContent(); }
+                if (listLibros is null || listLibros.Count == 0)
+                {
+                    return NoContent();
+                }
                 return Ok(listLibros);
             }
             catch (Exception ex)

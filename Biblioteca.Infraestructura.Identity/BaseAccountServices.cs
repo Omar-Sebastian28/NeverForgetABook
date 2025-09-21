@@ -70,27 +70,68 @@ namespace Biblioteca.Infraestructura.Identity
                     To = entity.Email,
                     Subject = "Solicitud de restablecimiento de contraseña",
                     HtmlBdy = $@"
-                        <html>
-                            <head>
-                                <style>
-                                    body {{ font-family: Arial, sans-serif; color: #333; }}
-                                    .container {{ max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9; }}
-                                    .button {{ display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; }}
-                                    .footer {{ margin-top: 20px; font-size: 0.9em; color: #777; }}
-                                </style>
-                            </head>
-                            <body>
-                                <div class='container'>
-                                    <h2>Hola,</h2>
-                                    <p>Recibimos una solicitud para restablecer tu contraseña. Si fuiste tú, puedes hacerlo haciendo clic en el siguiente botón:</p>
-                                    <p><a href='resetToken' class='button'>{resetToken}</a></p>
-                                    <p>Si no solicitaste este cambio, puedes ignorar este mensaje. Tu cuenta seguirá segura.</p>
-                                    <div class='footer'>
-                                        <p>Este mensaje fue generado automáticamente. Por favor, no respondas a este correo.</p>
+                            <html>
+                                <head>
+                                    <style>
+                                        body {{
+                                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                            background-color: #f4f6f8;
+                                            margin: 0;
+                                            padding: 40px;
+                                            color: #333;
+                                        }}
+                                        .container {{
+                                            background-color: #ffffff;
+                                            border-radius: 10px;
+                                            padding: 30px;
+                                            max-width: 600px;
+                                            margin: auto;
+                                            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                                        }}
+                                        h2 {{
+                                            color: #2c3e50;
+                                            margin-bottom: 20px;
+                                        }}
+                                        .token-label {{
+                                            font-weight: bold;
+                                            margin-top: 20px;
+                                        }}
+                                        .token-box {{
+                                            background-color: #f0f4f8;
+                                            border: 1px dashed #ccc;
+                                            padding: 15px;
+                                            font-size: 15px;
+                                            font-family: 'Courier New', Courier, monospace;
+                                            word-break: break-word;
+                                            user-select: all;
+                                            border-radius: 6px;
+                                            margin-top: 10px;
+                                        }}
+                                        .footer {{
+                                            font-size: 12px;
+                                            color: #888;
+                                            margin-top: 30px;
+                                            text-align: center;
+                                        }}
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class='container'>
+                                        <h2>Solicitud de restablecimiento de contraseña</h2>
+                                        <p>Hola,</p>
+                                        <p>Recibimos una solicitud para restablecer tu contraseña. Si fuiste tú, utiliza el siguiente token para completar el proceso:</p>
+                                        <div class='token-label'>🔐 Token de seguridad:</div>
+                                        <div class='token-box'>
+                                            {resetToken}
+                                        </div>
+                                        <p>Este token es válido por tiempo limitado. Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
+                                        <div class='footer'>
+                                            Este mensaje fue generado automáticamente. Por favor, no respondas a este correo.
+                                        </div>
                                     </div>
-                                </div>
-                            </body>
-                         </html>"
+                                </body>
+                            </html>"
+
                 });
                 await _userManager.UpdateAsync(entity);
                 return response;
@@ -108,10 +149,10 @@ namespace Biblioteca.Infraestructura.Identity
             ResetPasswordResponseDto response = new()
             {
                 UserName = "",
-                HasError = false
+                HasError = false,
             };
 
-            var user = await _userManager.FindByIdAsync(dto.Id);
+            var user = await _userManager.FindByNameAsync(dto.UserName);
             if (user is not null)
             {
                 var tokenUser = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(dto.Token));
@@ -126,6 +167,7 @@ namespace Biblioteca.Infraestructura.Identity
 
                 user.EmailConfirmed = true;
                 await _userManager.UpdateAsync(user);
+                response.Message = $"Usuario '{user.UserName}' se ha cambiado la contraseña correctamente.";
                 return response;
             }
 
@@ -236,40 +278,41 @@ namespace Biblioteca.Infraestructura.Identity
                     To = createUserDto.Email,
                     Subject = "Confirma tu cuenta en el sistema",
                     HtmlBdy = $@"
-                                    <div style='font-family:Segoe UI, sans-serif; background-color:#f9f9f9; padding:40px;'>
-                                        <div style='max-width:600px; margin:0 auto; background:white; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden;'>
-        
-                                            <!-- Encabezado -->
-                                            <div style='background:#28a745; color:white; text-align:center; padding:20px;'>
-                                                <h2 style='margin:0; font-size:22px;'>Bienvenido al Sistema</h2>
-                                            </div>
+                                <div style='font-family:Segoe UI, sans-serif; background-color:#f5f7fa; padding:40px;'>
+                                  <div style='max-width:600px; margin:0 auto; background:white; border-radius:8px; 
+                                              box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden;'>
 
-                                            <!-- Cuerpo -->
-                                            <div style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
-                                                <p>Hola <strong>{createUserDto.Nombre}</strong>,</p>
-            
-                                                <p>Gracias por registrarte en nuestro sistema. Para activar tu cuenta y comenzar a utilizar nuestros servicios, por favor confirma tu dirección de correo electrónico utilizando el siguiente token:</p>
+                                    <!-- Encabezado -->
+                                    <div style='background:#2563eb; color:white; text-align:center; padding:20px;'>
+                                      <h2 style='margin:0; font-size:22px;'>Confirmación de cuenta</h2>
+                                    </div>
 
-                                                <p style='text-align:center; margin:30px 0;'>
-                                                    <a href='token' 
-                                                       style='background-color:#28a745; color:white; padding:12px 24px; font-size:16px; 
-                                                              font-weight:bold; text-decoration:none; border-radius:6px; display:inline-block;'>
-                                                         {getVerificationToken}
-                                                    </a>
-                                                </p>
+                                    <!-- Cuerpo -->
+                                    <div style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
+                                      <p>Hola <strong>{createUserDto.Nombre}</strong>,</p>
 
-                                                <p>Si no solicitaste este registro, simplemente puedes ignorar este mensaje.</p>
+                                      <p>Gracias por registrarte en nuestro sistema. Para activar tu cuenta y comenzar a utilizar nuestros servicios, por favor confirma tu dirección de correo electrónico copiando el siguiente código de verificación:</p>
 
-                                                <p style='margin-top:30px;'>Saludos cordiales,<br><strong>Equipo de Soporte</strong></p>
-                                            </div>
+                                      <div style='background:#f3f4f6; border:1px dashed #cbd5e1; padding:15px; margin:25px 0; 
+                                                  font-size:18px; font-weight:bold; text-align:center; font-family:Consolas, monospace;'>
+                                        {getVerificationToken}
+                                      </div>
 
-                                            <!-- Footer -->
-                                            <div style='background:#f1f1f1; color:#777; text-align:center; font-size:13px; padding:15px;'>
-                                                © {DateTime.Now.Year} - Todos los derechos reservados<br/>
-                                                Este es un correo automático, por favor no respondas directamente.
-                                            </div>
-                                        </div>
-                                    </div>"
+                                      <p>Pega este código en el formulario de confirmación de tu cuenta.</p>
+
+                                      <p style='margin-top:30px;'>Si no solicitaste este registro, puedes ignorar este mensaje de manera segura.</p>
+
+                                      <p style='margin-top:30px;'>Atentamente,<br><strong>Equipo de Soporte</strong></p>
+                                    </div>
+
+                                    <!-- Footer -->
+                                    <div style='background:#f9fafb; color:#6b7280; text-align:center; font-size:13px; padding:15px;'>
+                                      © {DateTime.Now.Year} - Todos los derechos reservados<br/>
+                                      Este es un correo automático, por favor no respondas directamente.
+                                    </div>
+                                  </div>
+                                </div>"
+
                 });
             }
             catch (Exception ex)
@@ -310,7 +353,7 @@ namespace Biblioteca.Infraestructura.Identity
                 Message = ""
             };
 
-            var user = await _userManager.FindByIdAsync(userName);
+            var user = await _userManager.FindByNameAsync(userName);
             if (user is null)
             {   
                 confirmRequest.HasError = true;
@@ -394,50 +437,53 @@ namespace Biblioteca.Infraestructura.Identity
                         To = saveUserDto.Email,
                         Subject = "Confirma tu cuenta",
                         HtmlBdy = $@"
-                                <table width='100%' cellpadding='0' cellspacing='0' style='font-family:Segoe UI, sans-serif; background-color:#f9f9f9; padding:30px 0;'>
-                                  <tr>
-                                    <td align='center'>
-                                      <table width='600' cellpadding='0' cellspacing='0' style='background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);'>
-        
-                                        <!-- Encabezado -->
-                                        <tr>
-                                          <td style='background:#28a745; padding:20px; text-align:center; color:#fff; font-size:22px; font-weight:bold;'>
-                                            Confirmación de cuenta
-                                          </td>
-                                        </tr>
+                            <table width='100%' cellpadding='0' cellspacing='0' style='font-family:Segoe UI, sans-serif; background-color:#f3f4f6; padding:30px 0;'>
+                              <tr>
+                                <td align='center'>
+                                  <table width='600' cellpadding='0' cellspacing='0' style='background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);'>
 
-                                        <!-- Cuerpo -->
-                                        <tr>
-                                          <td style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
-                                            <p>Hola <strong>{saveUserDto.Nombre}</strong>,</p>
-                                            <p>Gracias por registrarte en nuestro sistema. Para completar el proceso y activar tu cuenta, utiliza el siguiente token:</p>
+                                    <!-- Encabezado -->
+                                    <tr>
+                                      <td style='background:#2563eb; padding:20px; text-align:center; color:#fff; font-size:22px; font-weight:bold;'>
+                                        Confirmación de cuenta
+                                      </td>
+                                    </tr>
 
-                                            <p style='text-align:center; margin:30px 0;'>
-                                              <a href='token' 
-                                                 style='background:#28a745; color:#ffffff; padding:14px 28px; text-decoration:none; 
-                                                        border-radius:6px; font-weight:bold; font-size:16px; display:inline-block;'>
-                                                 {verificationToken}
-                                              </a>
-                                            </p>
+                                    <!-- Cuerpo -->
+                                    <tr>
+                                      <td style='padding:30px; color:#333; font-size:16px; line-height:1.6;'>
+                                        <p>Hola <strong>{saveUserDto.Nombre}</strong>,</p>
+                                        <p>Gracias por registrarte en nuestro sistema. Para completar el proceso y activar tu cuenta, utiliza el siguiente código de verificación:</p>
 
-                                            <p>Si no solicitaste esta cuenta, simplemente ignora este mensaje.</p>
-                                            <p style='margin-top:30px; font-size:14px; color:#777;'>
-                                              Por tu seguridad, este enlace expirará en las próximas horas.
-                                            </p>
-                                          </td>
-                                        </tr>
+                                        <!-- Token -->
+                                        <div style='background:#f9fafb; border:1px dashed #cbd5e1; padding:15px; margin:25px 0; 
+                                                    font-size:20px; font-weight:bold; text-align:center; font-family:Consolas, monospace; color:#111827;'>
+                                          {verificationToken}
+                                        </div>
 
-                                        <!-- Footer -->
-                                        <tr>
-                                          <td style='background:#f1f1f1; padding:15px; text-align:center; font-size:13px; color:#555;'>
-                                            © {DateTime.UtcNow.Year} - Equipo de soporte<br>
-                                            Este es un correo automático, por favor no respondas a este mensaje.
-                                          </td>
-                                        </tr>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </table>"
+                                        <p>Pega este código en el formulario de confirmación de tu cuenta.</p>
+
+                                        <p style='margin-top:20px; font-size:14px; color:#555;'>
+                                          ⚠️ Por tu seguridad, este código expirará en las próximas horas.
+                                        </p>
+
+                                        <p style='margin-top:30px;'>Atentamente,<br><strong>Equipo de soporte</strong></p>
+                                      </td>
+                                    </tr>
+
+                                    <!-- Footer -->
+                                    <tr>
+                                      <td style='background:#f9fafb; padding:15px; text-align:center; font-size:13px; color:#6b7280;'>
+                                        © {DateTime.UtcNow.Year} - Todos los derechos reservados<br>
+                                        Este es un correo automático, por favor no respondas a este mensaje.
+                                      </td>
+                                    </tr>
+
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>"
+
                     });
                 }
 
