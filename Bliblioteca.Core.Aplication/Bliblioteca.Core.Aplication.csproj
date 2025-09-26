@@ -18,4 +18,9 @@
     <ProjectReference Include="..\Bliblioteca.Core.Domain\Bliblioteca.Core.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Libro\Commands\" />
+    <Folder Include="Features\Libro\Queries\" />
+  </ItemGroup>
+
 </Project>
