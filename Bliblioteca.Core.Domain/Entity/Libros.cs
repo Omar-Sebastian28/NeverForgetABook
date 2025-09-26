@@ -1,6 +1,6 @@
 ﻿namespace Bliblioteca.Core.Domain.Entity
 {
-    public class Libro
+    public class Libros
     {
         public int Id {get; set;}
         public required string Titulo {get; set;}

@@ -4,7 +4,7 @@ using Bliblioteca.Infraestructura.Persistencia.Contexts;
 
 namespace Bliblioteca.Infraestructura.Persistencia.Repository
 {
-    public class LibroRepository : GenericRepository<Libro> ,ILibroRepository
+    public class LibroRepository : GenericRepository<Libros> ,ILibroRepository
     {
         private readonly BibliotecaContext _context;
 

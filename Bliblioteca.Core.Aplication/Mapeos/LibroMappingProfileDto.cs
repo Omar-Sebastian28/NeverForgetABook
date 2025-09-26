@@ -8,7 +8,7 @@ namespace Bliblioteca.Core.Aplication.Mapeos
     {
         public LibroMappingProfileDto()
         {
-            CreateMap<Libro, LibroDto>().ReverseMap();
+            CreateMap<Libros, LibroDto>().ReverseMap();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Bliblioteca.Infraestructura.Persistencia.Contexts
     {
         public BibliotecaContext(DbContextOptions<BibliotecaContext> options) : base(options) { }
 
-        public DbSet<Libro> Libro { get; set; }
+        public DbSet<Libros> Libro { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

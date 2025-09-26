@@ -24,7 +24,7 @@ namespace Bliblioteca.Infraestructura.Persistencia.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Bliblioteca.Core.Domain.Entity.Libro", b =>
+            modelBuilder.Entity("Bliblioteca.Core.Domain.Entity.Libros", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

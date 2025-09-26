@@ -4,5 +4,6 @@ namespace Bliblioteca.Core.Aplication.Interfaces
 {
     public interface ILibroServices : IGenericServices<LibroDto>
     {
+        IQueryable<LibroDto> GetQuery();
     }
 }

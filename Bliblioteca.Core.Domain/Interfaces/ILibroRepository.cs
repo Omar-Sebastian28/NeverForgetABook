@@ -2,7 +2,7 @@
 
 namespace Bliblioteca.Core.Domain.Interfaces
 {
-    public interface ILibroRepository : IGenericRepository<Libro>
+    public interface ILibroRepository : IGenericRepository<Libros>
     {
     }
 }
