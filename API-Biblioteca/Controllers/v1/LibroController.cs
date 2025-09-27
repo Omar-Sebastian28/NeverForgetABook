@@ -1,8 +1,14 @@
 ﻿using Asp.Versioning;
 using Bliblioteca.Core.Aplication.Dto.Libro;
+using Bliblioteca.Core.Aplication.Features.Libro.Commands.CreateLibro;
+using Bliblioteca.Core.Aplication.Features.Libro.Commands.DeleteLibro;
+using Bliblioteca.Core.Aplication.Features.Libro.Commands.UpdateLibro;
+using Bliblioteca.Core.Aplication.Features.Libro.Queries.GetByIdLibro;
+using Bliblioteca.Core.Aplication.Features.Libro.Queries.GetQueryLibro;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace API_Biblioteca.Controllers.v1
 {
@@ -26,7 +32,7 @@ namespace API_Biblioteca.Controllers.v1
         {
             try
             {
-                var listLibros = await _libroServices.GetAllListAsync();
+                var listLibros = await Mediator.Send(new GetAllLibroQuery());
                 if (listLibros is null || listLibros.Count == 0)
                 {
                     return NoContent();
@@ -43,7 +49,7 @@ namespace API_Biblioteca.Controllers.v1
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody] LibroDto Dto)
+        public async Task<IActionResult> Create([FromBody] CreateLibroCommand command)
         {
             if (!ModelState.IsValid)
             {
@@ -51,10 +57,10 @@ namespace API_Biblioteca.Controllers.v1
             }
             try
             {
-                var result = await _libroServices.AddAsync(Dto);
+                var result = await Mediator.Send(command);
                 if (!result)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "La creacion fallo.");
+                    return StatusCode(StatusCodes.Status400BadRequest, "La creacion fallo.");
                 }
                 return Created();
             }
@@ -73,12 +79,12 @@ namespace API_Biblioteca.Controllers.v1
         {
             try
             {
-                var result = await _libroServices.GetByIdAsync(id);
-                if (!result.exito || result.dtoEntity is null)
+                var result = await Mediator.Send(new GetByIdLibroQuery() { Id = id });
+                if (result is null)
                 {
                     return NoContent();
                 }
-                return Ok(result.dtoEntity);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -92,15 +98,20 @@ namespace API_Biblioteca.Controllers.v1
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update([FromBody] LibroDto dto ,int id)
+        public async Task<IActionResult> Update([FromBody] UpdateLibroCommand command, int id)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest("Complete los campos requeridos.");
+            }
+
+            if (command.Id == id)
+            {
+                return BadRequest("Los ID no coincden ");
             }
             try
             {
-                var result = await _libroServices.UpdateAsync(dto,id);
+                var result = await Mediator.Send(command);
                 if (!result)
                 {
                     return NoContent();
@@ -118,11 +129,19 @@ namespace API_Biblioteca.Controllers.v1
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, [FromBody] DeleteLibroCommand command)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Complete los campos requeridos.");
+            }
+            if (command.Id != id)
+            {
+                return BadRequest("Los ID no coincden ");
+            }
             try
             {
-                var result = await _libroServices.DeleteAsync(id);
+                var result = await Mediator.Send(command);
                 if (!result)
                 {
                     return NoContent();
