@@ -5,14 +5,21 @@ namespace VerifyNewLibroValue;
 
 public class FunctionVerifyNewLibroValue
 {
-    public FunctionVerifyNewLibroValue([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer , ILoggerFactory loggerFactory)
+    private readonly ILogger _logger;
+
+    public FunctionVerifyNewLibroValue(ILoggerFactory loggerFactory)
     {
-       var logger = loggerFactory.CreateLogger<FunctionVerifyNewLibroValue>();  
-       logger.LogInformation("C# Timer trigger function executed at: {executionTime}", DateTime.Now);
-        
+        _logger = loggerFactory.CreateLogger<FunctionVerifyNewLibroValue>();
+    }
+
+    [Function("FunctionVerifyNewLibroValue")]
+    public void Run ([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer)
+    {  
+        _logger.LogInformation("C# Timer trigger function executed at: {ExecutionTime}", DateTime.Now);
+                                                                                                                                                                                                                                                                                                                                                                      
         if (myTimer.ScheduleStatus is not null)
         {
-            logger.LogInformation("Next timer schedule at: {nextSchedule}", myTimer.ScheduleStatus.Next);
+            _logger.LogInformation("Next timer schedule at: {NextSchedule}", myTimer.ScheduleStatus.Next);
         }
     }
 }

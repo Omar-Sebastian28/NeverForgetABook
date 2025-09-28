@@ -1,7 +1,19 @@
 {
     "IsEncrypted": false,
-    "Values": {
-        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
-    }
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "TimerTrigger": "0 */1 * * * *",
+    "InMemmory": false,
+
+    "ConnectionStrings : DefaultConnection": "Server=DESKTOP-S4CB5JA; Database=API_Biblioteca; Trusted_Connection=true; TrustServerCertificate=true;",
+    "ConnectionStrings : IdentityConnection": "Server=DESKTOP-S4CB5JA; Database=API_Biblioteca; Trusted_Connection=true; TrustServerCertificate=true;",
+
+    "MailSettings : EmailFrom": "omarjoaquinminayasebastian@gmail.com",
+    "MailSettings : SmtpHost": "smtp.gmail.com",
+    "MailSettings : SmtpPort": 587,
+    "MailSettings : SmtpUser": "omarjoaquinminayasebastian@gmail.com",
+    "MailSettings : SmtpPass": "muemxduzzffmvpjb",
+    "MailSettings : DisplayName": "Registromail"  
+  }
 }
