@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "VerifyNewLibroValue": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7139",
+      "launchBrowser": false
+    }
+  }
+}
