@@ -126,7 +126,7 @@ public class FunctionVerifyNewLibroValue
                                                 <td style='padding: 30px; text-align: center;'>
                                                     <div style='background-color: #e8f4f8; padding: 20px; border-radius: 6px; border-left: 4px solid #667eea;'>
                                                         <p style='margin: 0; font-size: 14px; color: #34495e; line-height: 1.6;'>
-                                                            <strong>Tareas de lectura pendientes:</strong> {libros.Count()}
+                                                            <strong>Tareas de lectura pendientes:</strong> {libros.Count}
                                                         </p>
                                                     </div>
                                                 </td>
