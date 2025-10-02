@@ -15,7 +15,7 @@ namespace API_Biblioteca.Controllers.v1
 {
     [ApiVersion("1.0")]
     [Authorize]
-    [SwaggerTag("Mantenimiento de los libros 'CRUD'")]
+    [SwaggerTag("Mantenimiento de los libros: CRUD")]
     public class LibroController : BaseApiController
     {
         private readonly ILibroServices _libroServices;
@@ -31,6 +31,13 @@ namespace API_Biblioteca.Controllers.v1
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LibroDto))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+
+            OperationId = "GetAllLibros",
+            Summary = "Obtiene todos los libros",
+            Description = "Obtiene todos los libros registrados sin filtros."
+          //  Tags = new[] { "LibroEndpoints" }
+        )]
         public async Task<IActionResult> Get()
         {
             try
@@ -50,8 +57,16 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpPost]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+
+            OperationId = "CreateLibro",
+            Summary = "Crea un nuevo libro",
+            Description = "Crea un nuevo libro en el sistema con los datos proporcionados."
+          //  Tags = new[] { "LibroEndpoints" }
+         )]
         public async Task<IActionResult> Create([FromBody] CreateLibroCommand command)
         {
             if (!ModelState.IsValid)
@@ -75,9 +90,17 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpGet("{id}")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LibroDto))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+            
+            OperationId = "GetLibroById",
+            Summary =  "Obtiene un libro por su ID",
+            Description = "Obtiene un libro registrado en el sistema mediante su identificador único (ID)."
+          //  Tags = new[] { "LibroEndpoints" }
+        )]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -98,9 +121,17 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpPut("{id}")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+
+            OperationId = "UpdateLibro",
+            Summary = "Actualiza un libro existente",
+            Description = "Actualiza los datos de un libro existente en el sistema."
+          //  Tags = new[] { "LibroEndpoints" }
+        )]
         public async Task<IActionResult> Update([FromBody] UpdateLibroCommand command, int id)
         {
             if (!ModelState.IsValid)
@@ -129,9 +160,17 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpDelete("{id}")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+
+            OperationId = "DeleteLibro",
+            Summary = "Elimina un libro existente",
+            Description = "Elimina un libro existente en el sistema mediante su identificador único (ID)."
+           // Tags = new[] { "LibroEndpoints" }
+        )]
         public async Task<IActionResult> Delete(int id, [FromBody] DeleteLibroCommand command)
         {
             if (!ModelState.IsValid)

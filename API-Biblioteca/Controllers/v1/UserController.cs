@@ -3,10 +3,13 @@ using Bliblioteca.Core.Aplication.Dto.User;
 using Bliblioteca.Core.Aplication.Helper;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Net.Mime;
 
 namespace API_Biblioteca.Controllers.v1
 {
     [ApiVersion("1.0")]
+    [SwaggerTag("Mantenimiento de los Usuarios: Crud")]
     public class UserController : BaseApiController
     {
         private readonly IAccountServicesForWebApi _accountServicesForWebApi;
@@ -18,9 +21,16 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpGet]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DtoUser>))]
+        [SwaggerOperation(
+            
+            OperationId = "GetAllUser",
+            Summary = "Obtiene todos los usuarios",
+            Description = "Obtiene todos los usuarios registrados sin filtros."
+        )]
         public async Task<IActionResult> GetAllUser() 
         {
             try
@@ -40,9 +50,16 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpPut]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+
+            OperationId = "EditUser",
+            Summary = "Edita un usuario existente",
+            Description = "Edita un usuario existente en el sistema con los datos proporcionados."
+        )]
         public async Task<IActionResult> EditUser([FromForm] BasicUserDto basicUserDto)
         {
             if (!ModelState.IsValid)

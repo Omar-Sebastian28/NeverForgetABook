@@ -37,6 +37,8 @@ namespace API_Biblioteca.Extesions
                 });
 
                 options.DescribeAllParametersInCamelCase();
+                options.EnableAnnotations();
+
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",

@@ -3,10 +3,13 @@ using Bliblioteca.Core.Aplication.Dto.User;
 using Bliblioteca.Core.Aplication.Helper;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Net.Mime;
 
 namespace API_Biblioteca.Controllers.v1
 {
     [ApiVersion("1.0")]
+    [SwaggerTag("Mantenimiento de cuentas: Crud")]
     public class AccountController : BaseApiController
     {
         private readonly IAccountServicesForWebApi _accountServicesForWebApi;
@@ -16,9 +19,17 @@ namespace API_Biblioteca.Controllers.v1
         }
 
         [HttpPost("login")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+
+            OperationId = "Authenticate",
+            Summary = "Autentica un usuario y genera un token JWT",
+            Description = "Permite autenticar un usuario con sus credenciales y, si son válidas, genera un token JWT para acceder a recursos protegidos."
+
+        )]
         public async Task<IActionResult> Authenticate([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -42,9 +53,16 @@ namespace API_Biblioteca.Controllers.v1
         }
 
         [HttpPost("register")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+            
+            OperationId = "Register",
+            Summary = "Registra un nuevo usuario",
+            Description = "Permite registrar un nuevo usuario en el sistema con los datos proporcionados."
+        )]
         public async Task<IActionResult> Register([FromForm] BasicUserDto basicUseDto)
         {
             if (!ModelState.IsValid)
@@ -90,9 +108,16 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpPost("confirm-account")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+         
+            OperationId = "ConfirmAccount",
+            Summary = "Confirma la cuenta de un usuario",
+            Description = "Permite confirmar la cuenta de un usuario utilizando un token enviado por correo electrónico."
+        )]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userName, string token)
         {
             if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrEmpty(token)) 
@@ -117,9 +142,16 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpPost("reset-password-token")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+        
+            OperationId = "ForgotPassword",
+            Summary = "Genera un token para restablecer la contraseña",
+            Description = "Permite genera un token para restablecer la contraseña y lo envía al correo electrónico del usuario."
+        )]
         public async Task<IActionResult> ForgotPassword([FromQuery] string userName)
         {
             if (string.IsNullOrWhiteSpace(userName))
@@ -147,9 +179,16 @@ namespace API_Biblioteca.Controllers.v1
         }
 
         [HttpPost("confirm-change-password")]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+            
+            OperationId = "ConfirmChangePassword",
+            Summary = "Confirma el cambio de contraseña",
+            Description = "Permite confirmar el cambio de contraseña utilizando el token enviado al correo electrónico del usuario."
+        )]
         public async Task<IActionResult> ConfirmChangePassword([FromForm] ResetPasswordRequestDto changePassword)
         {
             if (!ModelState.IsValid)
