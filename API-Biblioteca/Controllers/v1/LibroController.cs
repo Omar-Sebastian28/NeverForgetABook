@@ -15,7 +15,7 @@ namespace API_Biblioteca.Controllers.v1
 {
     [ApiVersion("1.0")]
     [Authorize]
-    [SwaggerTag("Mantenimiento de los libros: CRUD")]
+    [SwaggerTag("Mantenimiento de los libros: Crud")]
     public class LibroController : BaseApiController
     {
         private readonly ILibroServices _libroServices;

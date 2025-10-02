@@ -5,12 +5,22 @@ using MediatR;
 
 namespace Bliblioteca.Core.Aplication.Features.Libro.Commands.UpdateLibro
 {
+    /// <summary>
+    /// Parametros necesarios para editar un libro. 
+    /// </summary>
     public class UpdateLibroCommand : IRequest<bool>
     {
+        ///<Example>28</Example>>
         public int Id { get; set; }
+
+        ///<Example>La bella y la bestia</Example>
         public required string Titulo { get; set; }
+
+        ///<Example>Gabriel García Márquez</Example>
         public required string Autor { get; set; }
         public required int AñoPublicacion { get; set; }
+
+        ///<Example>Masculino/Femenino<Example/>
         public required string Genero { get; set; }
         public required string Descripcion { get; set; }
         public string? UsuarioId { get; set; }

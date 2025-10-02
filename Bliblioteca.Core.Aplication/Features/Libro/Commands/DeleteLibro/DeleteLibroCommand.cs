@@ -3,8 +3,12 @@ using MediatR;
 
 namespace Bliblioteca.Core.Aplication.Features.Libro.Commands.DeleteLibro
 {
+    /// <summary>
+    /// Parametro necesario para borrar un libro por (ID)
+    /// </summary>
     public class DeleteLibroCommand : IRequest<bool>
     {
+        ///<Example>7</Example>
         public int Id { get; set; }
     }
 
