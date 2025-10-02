@@ -8,12 +8,14 @@ using Bliblioteca.Core.Aplication.Features.Libro.Queries.GetQueryLibro;
 using Bliblioteca.Core.Aplication.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Net.Mime;
 
 namespace API_Biblioteca.Controllers.v1
 {
     [ApiVersion("1.0")]
     [Authorize]
+    [SwaggerTag("Mantenimiento de los libros 'CRUD'")]
     public class LibroController : BaseApiController
     {
         private readonly ILibroServices _libroServices;
@@ -25,6 +27,7 @@ namespace API_Biblioteca.Controllers.v1
 
 
         [HttpGet]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LibroDto))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

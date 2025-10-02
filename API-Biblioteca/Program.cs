@@ -4,16 +4,27 @@ using API_Biblioteca.Extesions;
 using Biblioteca.Infraestructura.Identity;
 using BIblioteca.Infraestructura.Share;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers()
-    .AddJsonOptions(opt => 
-    {
-        opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+builder.Services.AddControllers(opt => 
+{
+    opt.Filters.Add(new ProducesAttribute("application/json"));
+
+}).ConfigureApiBehaviorOptions(opt => 
+{
+    opt.SuppressInferBindingSourcesForParameters = true; 
+   // opt.SuppressMapClientErrors = true;
+
+}).AddJsonOptions(opt =>
+{
+    opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 var configuration = builder.Configuration;
