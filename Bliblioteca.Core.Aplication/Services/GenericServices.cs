@@ -25,8 +25,7 @@ namespace Bliblioteca.Core.Aplication.Services
             try
             {
                 var entity = _autoMapper.Map<TEntity>(dtoEntity);
-                await _genericRepository.AddAsync(entity);
-                return true;
+                return await _genericRepository.AddAsync(entity);
             }
             catch (Exception ex)
             {
@@ -49,8 +48,8 @@ namespace Bliblioteca.Core.Aplication.Services
             try
             {
                 var entity = _autoMapper.Map<TEntity>(dtoEntity);
-                await _genericRepository.UpdateAsync(entity, id);
-                return true;
+                return await _genericRepository.UpdateAsync(entity, id);
+         
             }
             catch (Exception ex)
             {
@@ -100,8 +99,7 @@ namespace Bliblioteca.Core.Aplication.Services
             }
             try
             {
-                await _genericRepository.DeleteAsync(id);
-                return true;
+                return await _genericRepository.DeleteAsync(id);
             }
             catch (Exception ex)
             {

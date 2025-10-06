@@ -81,6 +81,7 @@ namespace Bliblioteca.Infraestructura.Persistencia
                     await _context.SaveChangesAsync();
                     return true;
                 }
+                return false;
 
             }
             catch (DbUpdateException ex)
