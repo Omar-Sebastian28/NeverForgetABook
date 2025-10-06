@@ -20,7 +20,7 @@ namespace Bliblioteca.Core.Aplication.Features.Libro.Commands.UpdateLibro
         public required string Autor { get; set; }
         public required int AñoPublicacion { get; set; }
 
-        ///<Example>Masculino/Femenino<Example/>
+        ///<Example>Masculino/Femenino</Example>
         public required string Genero { get; set; }
         public required string Descripcion { get; set; }
         public string? UsuarioId { get; set; }

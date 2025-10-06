@@ -24,15 +24,10 @@ namespace Bliblioteca.Infraestructura.Persistencia
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateException ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error al guardar entidad{ex.Message}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"Detalle interno: {ex.InnerException.Message}");
-                }
+                throw new ArgumentNullException();
             }
-            return false;
         }
 
 
