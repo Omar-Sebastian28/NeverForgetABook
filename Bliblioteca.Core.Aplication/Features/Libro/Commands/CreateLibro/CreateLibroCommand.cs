@@ -50,8 +50,7 @@ namespace Bliblioteca.Core.Aplication.Features.Libro.Commands.CreateLibro
             }
             try
             {   var entity = _mapper.Map<Libros>(command);
-                await _libroRepository.AddAsync(entity);
-                return true;
+                return await _libroRepository.AddAsync(entity);
             }
             catch (Exception ex) 
             {

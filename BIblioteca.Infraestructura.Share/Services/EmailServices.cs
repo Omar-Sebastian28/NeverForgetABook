@@ -1,7 +1,6 @@
 ﻿using Bliblioteca.Core.Aplication.Dto.Email;
 using Bliblioteca.Core.Domain.Settings;
 using Microsoft.Extensions.Options;
-using MailKit;
 using Microsoft.Extensions.Logging;
 using Bliblioteca.Core.Aplication.Interfaces;
 using MimeKit;

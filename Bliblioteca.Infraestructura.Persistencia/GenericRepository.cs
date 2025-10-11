@@ -14,8 +14,6 @@ namespace Bliblioteca.Infraestructura.Persistencia
             _context = context;
         }
 
-
-
         public virtual async Task<bool> AddAsync(Entity entity)
         {
             try
@@ -29,8 +27,6 @@ namespace Bliblioteca.Infraestructura.Persistencia
                 throw new ArgumentNullException();
             }
         }
-
-
 
         public virtual async Task<bool> UpdateAsync(Entity entity, int id)
         {
