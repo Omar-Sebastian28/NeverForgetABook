@@ -1,5 +1,6 @@
 ﻿using Bliblioteca.Core.Aplication.Interfaces;
 using Bliblioteca.Core.Aplication.Services;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -12,7 +13,7 @@ namespace Bliblioteca.Core.Aplication
             #region Configurando AutoMapper y MediatR
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(opt => opt.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
-
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             #endregion
 
 
